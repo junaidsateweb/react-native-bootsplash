@@ -2,6 +2,8 @@ package com.zoontek.rnbootsplash
 
 import android.app.Activity
 import android.app.Dialog
+import android.content.Context
+import android.content.res.Resources
 import android.os.Bundle
 import android.view.WindowManager
 
@@ -34,6 +36,7 @@ class RNBootSplashDialog(
   fun dismiss(callback: () -> Unit) {
     if (isShowing) {
       setOnDismissListener { callback() }
+
       runCatching { super.dismiss() }.onFailure { callback() }
     } else {
       callback()
@@ -42,7 +45,9 @@ class RNBootSplashDialog(
 
   override fun show() {
     if (!isShowing) {
-      runCatching { super.show() }
+      runCatching { super.show()
+
+         }
     }
   }
 
@@ -54,6 +59,14 @@ class RNBootSplashDialog(
       callback()
     }
   }
+  fun hasResource(context: Context,resID: Int ): Boolean {
+    return try {
+      context.resources.getResourceName(resID) //This will throw if not found.
+      true
+    } catch (e: Resources.NotFoundException) {
+      false
+    }
+  }
 
   override fun onCreate(savedInstanceState: Bundle?) {
     window?.apply {
@@ -61,6 +74,9 @@ class RNBootSplashDialog(
         WindowManager.LayoutParams.MATCH_PARENT,
         WindowManager.LayoutParams.MATCH_PARENT
       )
+      if (hasResource(context,R.layout.launch_screen)){
+        setContentView(R.layout.launch_screen)
+      }
 
       setWindowAnimations(
         when {
